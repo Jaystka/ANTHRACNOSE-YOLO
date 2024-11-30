@@ -6,7 +6,7 @@ import tempfile
 import cv2
 
 # Load model YOLOv8
-model_path = "modelYolo.pt"  # Ganti dengan path model Anda
+model_path = "modelYolo.pt"  # Ganti dengan path model And
 model = YOLO(model_path)
 
 # Fungsi untuk deteksi pada gambar
