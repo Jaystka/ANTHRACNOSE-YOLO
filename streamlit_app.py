@@ -7,7 +7,7 @@ import cv2
 import time  # Untuk mengukur waktu
 
 # Load model YOLOv8
-model_path = "modelYolo.pt"  # Ganti dengan path model Anda
+model_path = "modelYolo"  # Ganti dengan path model Anda
 model = YOLO(model_path)
 
 # Fungsi untuk deteksi pada gambar
@@ -60,11 +60,11 @@ if mode == "Gambar":
     if uploaded_image:
         image = Image.open(uploaded_image)
         image_np = np.array(image)
-        st.image(image, caption="Gambar yang Diupload", use_column_width=True)
+        st.image(image, caption="Gambar yang Diupload", use_container_width=True)  # Update parameter
         
         st.write("Proses deteksi...")
         annotated_image, detections, detection_time = detect_anthracnose(image_np)
-        st.image(annotated_image, caption="Hasil Deteksi", use_column_width=True)
+        st.image(annotated_image, caption="Hasil Deteksi", use_container_width=True)  # Update parameter
         
         # Tampilkan hasil prediksi
         st.write("Deteksi:")
