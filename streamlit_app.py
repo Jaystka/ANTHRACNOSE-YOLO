@@ -7,7 +7,7 @@ import cv2
 import time  # Untuk mengukur waktu
 
 # Load model YOLOv8
-model_path = "modelYolo"  # Ganti dengan path model Anda
+model_path = "modelYolo.pt"  # Ganti dengan path model Anda
 model = YOLO(model_path)
 
 # Fungsi untuk deteksi pada gambar
