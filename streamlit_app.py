@@ -5,6 +5,7 @@ import numpy as np
 import tempfile
 import cv2
 import time  # Untuk mengukur waktu
+from sklearn.metrics import average_precision_score
 
 # Load model YOLOv8
 model_path = "bestModelYolo.pt"  # Ganti dengan path model Anda
@@ -37,6 +38,7 @@ def detect_video(video_path):
     out = cv2.VideoWriter(temp_output.name, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
     
     start_time = time.time()  # Mulai pengukuran waktu
+    all_detections = []  # Untuk menyimpan semua deteksi
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -44,14 +46,37 @@ def detect_video(video_path):
         results = model(frame)
         annotated_frame = results[0].plot()
         out.write(annotated_frame)
+        
+        # Ekstraksi prediksi untuk mAP
+        for r in results[0].boxes:
+            class_id = int(r.cls)
+            confidence = float(r.conf)
+            all_detections.append((model.names[class_id], confidence))
+    
     end_time = time.time()  # Selesai pengukuran waktu
     cap.release()
     out.release()
     detection_time = end_time - start_time
-    return temp_output.name, detection_time
+    return temp_output.name, detection_time, all_detections
+
+# Fungsi untuk menghitung mAP
+def calculate_map(true_labels, pred_labels):
+    # Menghitung mAP
+    y_true = np.zeros((len(true_labels), len(model.names)))
+    y_pred = np.zeros((len(pred_labels), len(model.names)))
+
+    for i, label in enumerate(true_labels):
+        y_true[i][label] = 1  # Set true label
+
+    for i, (label, confidence) in enumerate(pred_labels):
+        y_pred[i][label] = confidence  # Set predicted confidence
+
+    # Menghitung mAP
+    mAP = average_precision_score(y_true, y_pred, average='macro')
+    return mAP
 
 # Streamlit UI
-st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma YOLO")
+st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma Yolo")
 st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
@@ -83,10 +108,15 @@ elif mode == "Video":
         st.video(temp_input.name)
         
         st.write("Proses deteksi...")
-        output_video_path, detection_time = detect_video(temp_input.name)
+        output_video_path, detection_time, all_detections = detect_video(temp_input.name)
         st.video(output_video_path)
         
         # Tampilkan waktu deteksi
         st.write(f"**Waktu Deteksi:** {detection_time:.2f} detik")
+
+        # Contoh label yang benar (harus disesuaikan dengan data Anda)
+        true_labels = [0, 1]  # Misalnya, 0 untuk 'antraknosa', 1 untuk 'normal'
+        mAP = calculate_map(true_labels, all_detections)
+        st.write(f"**mAP:** {mAP:.2f}")
 
 st.write("Aplikasi deteksi penyakit antraknosa pada buah pisang dengan YOLOv8.")
