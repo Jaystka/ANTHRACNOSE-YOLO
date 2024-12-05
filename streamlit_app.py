@@ -51,7 +51,7 @@ def detect_video(video_path):
     return temp_output.name, detection_time
 
 # Streamlit UI
-st.title("Deteksi Penyakit Antraknosa pada Buah Pisang")
+st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma YOLO")
 st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
