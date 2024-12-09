@@ -60,7 +60,6 @@ if mode == "Gambar":
     if uploaded_image:
         image = Image.open(uploaded_image)
         image_np = np.array(image)
-        st.image(image, caption="Gambar yang Diupload", use_container_width=True)  # Update parameter
         
         st.write("Proses deteksi...")
         annotated_image, detections, detection_time = detect_anthracnose(image_np)
