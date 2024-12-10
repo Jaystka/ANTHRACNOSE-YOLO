@@ -57,7 +57,7 @@ st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
 # Threshold tetap
-conf_threshold = 0.8
+conf_threshold = 0.25
 iou_threshold = 0.3
 
 if mode == "Gambar":
