@@ -11,22 +11,23 @@ model_path = "bestModelYolo.pt"  # Ganti dengan path model Anda
 model = YOLO(model_path)
 
 # Fungsi untuk deteksi pada gambar
-def detect_anthracnose(image):
+def detect_anthracnose(image, conf_threshold=0.8, iou_threshold=0.3):
     start_time = time.time()  # Mulai pengukuran waktu
-    results = model(image)
+    results = model(image, conf=conf_threshold, iou=iou_threshold)  # Set threshold
     annotated_frame = results[0].plot()  # Visualisasi hasil
     # Ekstraksi prediksi
     detections = []
     for r in results[0].boxes:
         class_id = int(r.cls)
         confidence = float(r.conf)
-        detections.append((model.names[class_id], confidence))
+        if confidence >= conf_threshold:  # Hanya tampilkan yang lebih tinggi dari threshold
+            detections.append((model.names[class_id], confidence))
     end_time = time.time()  # Selesai pengukuran waktu
     detection_time = end_time - start_time
     return annotated_frame, detections, detection_time
 
 # Fungsi untuk deteksi pada video
-def detect_video(video_path):
+def detect_video(video_path, conf_threshold=0.8, iou_threshold=0.3):
     cap = cv2.VideoCapture(video_path)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -41,7 +42,7 @@ def detect_video(video_path):
         ret, frame = cap.read()
         if not ret:
             break
-        results = model(frame)
+        results = model(frame, conf=conf_threshold, iou=iou_threshold)  # Set threshold
         annotated_frame = results[0].plot()
         out.write(annotated_frame)
     end_time = time.time()  # Selesai pengukuran waktu
@@ -55,6 +56,9 @@ st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma YOLOv8")
 st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
+conf_threshold = st.sidebar.slider("Threshold Confidence", 0.0, 1.0, 0.8, 0.01)
+iou_threshold = st.sidebar.slider("Threshold IoU", 0.0, 1.0, 0.3, 0.01)
+
 if mode == "Gambar":
     uploaded_image = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
     if uploaded_image:
@@ -62,7 +66,7 @@ if mode == "Gambar":
         image_np = np.array(image)
         
         st.write("Proses deteksi...")
-        annotated_image, detections, detection_time = detect_anthracnose(image_np)
+        annotated_image, detections, detection_time = detect_anthracnose(image_np, conf_threshold, iou_threshold)
         st.image(annotated_image, caption="Hasil Deteksi", use_container_width=True)  # Update parameter
         
         # Tampilkan hasil prediksi
@@ -82,7 +86,7 @@ elif mode == "Video":
         st.video(temp_input.name)
         
         st.write("Proses deteksi...")
-        output_video_path, detection_time = detect_video(temp_input.name)
+        output_video_path, detection_time = detect_video(temp_input.name, conf_threshold, iou_threshold)
         st.video(output_video_path)
         
         # Tampilkan waktu deteksi
