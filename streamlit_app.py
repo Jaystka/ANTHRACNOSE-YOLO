@@ -64,6 +64,11 @@ if mode == "Gambar":
     uploaded_image = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
     if uploaded_image:
         image = Image.open(uploaded_image)
+
+        # Pastikan gambar dalam mode RGB
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        
         image_np = np.array(image)
         
         st.write("Proses deteksi...")
