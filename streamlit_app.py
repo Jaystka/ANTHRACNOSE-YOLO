@@ -56,29 +56,23 @@ st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma YOLOv8")
 st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
-# Threshold tetap
-conf_threshold = 0.3
-iou_threshold = 0.5
+conf_threshold = st.sidebar.slider("Threshold Confidence", 0.0, 1.0, 0.8, 0.01)
+iou_threshold = st.sidebar.slider("Threshold IoU", 0.0, 1.0, 0.3, 0.01)
 
 if mode == "Gambar":
     uploaded_image = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
     if uploaded_image:
         image = Image.open(uploaded_image)
-
-        # Pastikan gambar dalam mode RGB
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-        
         image_np = np.array(image)
         
         st.write("Proses deteksi...")
         annotated_image, detections, detection_time = detect_anthracnose(image_np, conf_threshold, iou_threshold)
         st.image(annotated_image, caption="Hasil Deteksi", use_container_width=True)  # Update parameter
         
-        # # Tampilkan hasil prediksi
-        # st.write("Deteksi:")
-        # for label, confidence in detections:
-        #     st.write(f"- **{label}** dengan kepercayaan {confidence:.2f}")
+        # Tampilkan hasil prediksi
+        st.write("Deteksi:")
+        for label, confidence in detections:
+            st.write(f"- **{label}** dengan kepercayaan {confidence:.2f}")
         
         # Tampilkan waktu deteksi
         st.write(f"**Waktu Deteksi:** {detection_time:.2f} detik")
