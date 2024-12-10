@@ -75,10 +75,10 @@ if mode == "Gambar":
         annotated_image, detections, detection_time = detect_anthracnose(image_np, conf_threshold, iou_threshold)
         st.image(annotated_image, caption="Hasil Deteksi", use_container_width=True)  # Update parameter
         
-        # # Tampilkan hasil prediksi
-        # st.write("Deteksi:")
-        # for label, confidence in detections:
-        #     st.write(f"- **{label}** dengan kepercayaan {confidence:.2f}")
+        # Tampilkan hasil prediksi
+        st.write("Deteksi:")
+        for label, confidence in detections:
+            st.write(f"- **{label}** dengan kepercayaan {confidence:.2f}")
         
         # Tampilkan waktu deteksi
         st.write(f"**Waktu Deteksi:** {detection_time:.2f} detik")
