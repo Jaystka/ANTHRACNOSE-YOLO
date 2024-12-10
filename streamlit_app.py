@@ -56,8 +56,9 @@ st.title("Deteksi Penyakit Antraknosa pada Buah Pisang Algoritma YOLOv8")
 st.sidebar.header("Pilihan Deteksi")
 mode = st.sidebar.selectbox("Pilih Mode:", ["Gambar", "Video"])
 
-conf_threshold = st.sidebar.slider("Threshold Confidence", 0.0, 1.0, 0.8, 0.01)
-iou_threshold = st.sidebar.slider("Threshold IoU", 0.0, 1.0, 0.3, 0.01)
+# Threshold tetap
+conf_threshold = 0.8
+iou_threshold = 0.3
 
 if mode == "Gambar":
     uploaded_image = st.file_uploader("Unggah Gambar", type=["jpg", "jpeg", "png"])
